@@ -9,7 +9,7 @@ interface ManualEditorProps {
 }
 
 const ManualEditor: React.FC<ManualEditorProps> = ({ data, onChange, onPreview }) => {
-  const [activeSubTab, setActiveSubTab] = useState<'text' | 'media'>('text');
+  const [activeSubTab, setActiveSubTab] = useState<'copy' | 'media'>('copy');
 
   const updateField = (field: keyof ComparisonData, value: string) => {
     onChange({ ...data, [field]: value });
@@ -22,156 +22,162 @@ const ManualEditor: React.FC<ManualEditorProps> = ({ data, onChange, onPreview }
     });
   };
 
-  const updateList = (productKey: 'productA' | 'productB', listKey: 'pros' | 'cons', index: number, value: string) => {
-    const newList = [...data[productKey][listKey]];
-    newList[index] = value;
-    updateProduct(productKey, listKey, newList);
-  };
-
-  const addListItem = (productKey: 'productA' | 'productB', listKey: 'pros' | 'cons') => {
-    const newList = [...data[productKey][listKey], ''];
-    updateProduct(productKey, listKey, newList);
+  const handleListUpdate = (productKey: 'productA' | 'productB', listKey: 'pros' | 'cons', index: number, value: string) => {
+    const list = [...data[productKey][listKey]];
+    list[index] = value;
+    updateProduct(productKey, listKey, list);
   };
 
   return (
-    <div className="editor-grid border-2 border-gray-300 p-8 mb-12 min-h-[600px] shadow-inner relative">
-      <div className="flex justify-between items-center mb-8 border-b-2 border-black pb-4">
-        <h3 className="font-newspaper-serif text-2xl font-bold uppercase tracking-tighter">Drafting Room</h3>
-        <div className="flex gap-2">
+    <div className="bg-white border border-gray-200 shadow-sm p-8">
+      <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
+        <h3 className="font-classic uppercase text-xs font-bold tracking-[0.2em]">Refining the Draft</h3>
+        <div className="flex bg-gray-100 p-1 rounded">
           <button 
-            onClick={() => setActiveSubTab('text')}
-            className={`px-4 py-1 text-xs font-classic uppercase font-bold border border-black transition-all ${activeSubTab === 'text' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+            onClick={() => setActiveSubTab('copy')}
+            className={`px-4 py-1.5 text-[10px] uppercase font-bold rounded transition-all ${activeSubTab === 'copy' ? 'bg-white shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
           >
-            Lead Story
+            Editorial Copy
           </button>
           <button 
             onClick={() => setActiveSubTab('media')}
-            className={`px-4 py-1 text-xs font-classic uppercase font-bold border border-black transition-all ${activeSubTab === 'media' ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+            className={`px-4 py-1.5 text-[10px] uppercase font-bold rounded transition-all ${activeSubTab === 'media' ? 'bg-white shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
           >
-            Media Assets
+            Media & Links
           </button>
         </div>
       </div>
 
-      {activeSubTab === 'text' ? (
-        <div className="space-y-6 font-typewriter">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[10px] uppercase font-bold mb-1 opacity-50">Headline</label>
-              <input 
-                className="w-full bg-white/80 border border-gray-200 p-2 text-lg font-bold"
-                value={data.title}
-                onChange={(e) => updateField('title', e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] uppercase font-bold mb-1 opacity-50">Author Byline</label>
-              <input 
-                className="w-full bg-white/80 border border-gray-200 p-2"
-                value={data.author}
-                onChange={(e) => updateField('author', e.target.value)}
-              />
-            </div>
+      {activeSubTab === 'copy' ? (
+        <div className="space-y-6 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+             <div className="md:col-span-2">
+               <label className="text-[10px] uppercase font-bold text-gray-400">Main Headline</label>
+               <input 
+                 className="w-full border-b border-gray-300 py-2 font-newspaper-serif text-2xl focus:outline-none focus:border-black"
+                 value={data.title}
+                 onChange={(e) => updateField('title', e.target.value)}
+               />
+             </div>
+             <div>
+               <label className="text-[10px] uppercase font-bold text-gray-400">Byline</label>
+               <input 
+                 className="w-full border-b border-gray-300 py-2 font-classic text-sm focus:outline-none focus:border-black"
+                 value={data.author}
+                 onChange={(e) => updateField('author', e.target.value)}
+               />
+             </div>
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase font-bold mb-1 opacity-50">Subheadline (The Hook)</label>
-            <textarea 
-              className="w-full bg-white/80 border border-gray-200 p-2 h-20 italic"
+            <label className="text-[10px] uppercase font-bold text-gray-400">Editorial Hook (Subtitle)</label>
+            <input 
+              className="w-full border-b border-gray-300 py-2 font-body-serif italic text-lg focus:outline-none focus:border-black"
               value={data.subtitle}
               onChange={(e) => updateField('subtitle', e.target.value)}
             />
           </div>
 
           <div>
-            <label className="block text-[10px] uppercase font-bold mb-1 opacity-50">Main Body Copy (Summary)</label>
+            <label className="text-[10px] uppercase font-bold text-gray-400">Opening Statement (Summary)</label>
             <textarea 
-              className="w-full bg-white/80 border border-gray-200 p-2 h-40 leading-relaxed"
+              className="w-full border border-gray-200 p-4 font-body-serif text-sm leading-relaxed h-32 focus:outline-none focus:ring-1 focus:ring-black"
               value={data.summary}
               onChange={(e) => updateField('summary', e.target.value)}
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-gray-200">
-            {['productA', 'productB'].map((key) => {
-              const pKey = key as 'productA' | 'productB';
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-gray-100">
+            {['productA', 'productB'].map((p) => {
+              const pKey = p as 'productA' | 'productB';
               return (
-                <div key={key}>
-                  <h4 className="text-xs uppercase font-bold mb-4 border-b border-black">{pKey === 'productA' ? 'Primary' : 'Secondary'} Product Details</h4>
-                  <div className="space-y-4">
-                    <input 
-                      placeholder="Product Name"
-                      className="w-full bg-white border border-gray-200 p-2 font-bold"
-                      value={data[pKey].name}
-                      onChange={(e) => updateProduct(pKey, 'name', e.target.value)}
-                    />
-                    <div>
-                      <label className="block text-[10px] uppercase mb-1">Pros</label>
-                      {data[pKey].pros.map((pro, i) => (
-                        <input 
-                          key={i}
-                          className="w-full bg-transparent border-b border-gray-100 text-sm mb-1"
-                          value={pro}
-                          onChange={(e) => updateList(pKey, 'pros', i, e.target.value)}
-                        />
-                      ))}
-                      <button onClick={() => addListItem(pKey, 'pros')} className="text-[10px] text-blue-600 hover:underline">+ Add Strength</button>
-                    </div>
+                <div key={p}>
+                  <h4 className="text-[10px] uppercase font-bold mb-4 bg-gray-50 p-2 text-center">{pKey === 'productA' ? 'Primary' : 'Secondary'} Candidate</h4>
+                  <input 
+                    className="w-full font-bold text-sm border-b border-gray-200 mb-4 focus:outline-none focus:border-black"
+                    value={data[pKey].name}
+                    onChange={(e) => updateProduct(pKey, 'name', e.target.value)}
+                  />
+                  <div className="space-y-2">
+                    <label className="text-[9px] uppercase font-bold text-gray-300">Strengths (one per line)</label>
+                    {data[pKey].pros.map((pro, i) => (
+                      <input 
+                        key={i}
+                        className="w-full text-xs font-body-serif border-none bg-green-50/30 px-2 py-1 focus:outline-none"
+                        value={pro}
+                        onChange={(e) => handleListUpdate(pKey, 'pros', i, e.target.value)}
+                      />
+                    ))}
                   </div>
                 </div>
               );
             })}
           </div>
 
-          <div className="pt-6">
-            <label className="block text-[10px] uppercase font-bold mb-1 opacity-50">Final Verdict</label>
+          <div className="pt-8 border-t border-gray-100">
+            <label className="text-[10px] uppercase font-bold text-gray-400">The Editorial Verdict</label>
             <textarea 
-              className="w-full bg-[#1a1a1a] text-white border-none p-4 h-24 italic text-sm"
+              className="w-full bg-black text-white p-4 font-body-serif text-sm italic h-24 focus:outline-none"
               value={data.verdict}
               onChange={(e) => updateField('verdict', e.target.value)}
             />
           </div>
         </div>
       ) : (
-        <div className="space-y-8 font-typewriter">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {['productA', 'productB'].map((key) => {
-              const pKey = key as 'productA' | 'productB';
-              return (
-                <div key={key} className="space-y-4">
-                  <h4 className="text-xs uppercase font-bold border-b border-black pb-1">Media for {data[pKey].name || 'Product ' + (pKey === 'productA' ? 'A' : 'B')}</h4>
-                  <div className="aspect-video bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center relative overflow-hidden group">
-                    {data[pKey].imageUrl ? (
-                      <img src={data[pKey].imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" />
-                    ) : (
-                      <span className="text-gray-400 text-[10px] uppercase">No image linked</span>
-                    )}
-                  </div>
+        <div className="space-y-10 max-w-3xl mx-auto">
+          {['productA', 'productB'].map((p) => {
+            const pKey = p as 'productA' | 'productB';
+            return (
+              <div key={p} className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 border border-gray-100 bg-gray-50/50">
+                <div className="space-y-4">
+                  <h4 className="text-xs font-bold uppercase">{data[pKey].name || 'Product ' + (pKey === 'productA' ? 'A' : 'B')}</h4>
                   <div>
-                    <label className="block text-[10px] uppercase mb-1">Image URL</label>
+                    <label className="text-[9px] uppercase font-bold text-gray-400">Image Asset URL</label>
                     <input 
-                      className="w-full bg-white border border-gray-200 p-2 text-xs"
-                      placeholder="Paste image URL here..."
+                      className="w-full text-xs border border-gray-300 p-2 bg-white"
                       value={data[pKey].imageUrl || ''}
                       onChange={(e) => updateProduct(pKey, 'imageUrl', e.target.value)}
+                      placeholder="https://images..."
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[9px] uppercase font-bold text-gray-400">Affiliate Destination Link</label>
+                    <input 
+                      className="w-full text-xs border border-gray-300 p-2 bg-white"
+                      value={data[pKey].affiliateUrl || ''}
+                      onChange={(e) => updateProduct(pKey, 'affiliateUrl', e.target.value)}
+                      placeholder="https://amzn.to/..."
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[9px] uppercase font-bold text-gray-400">Estimated Price Range</label>
+                    <input 
+                      className="w-full text-xs border border-gray-300 p-2 bg-white"
+                      value={data[pKey].priceRange || ''}
+                      onChange={(e) => updateProduct(pKey, 'priceRange', e.target.value)}
+                      placeholder="$299 - $349"
                     />
                   </div>
                 </div>
-              );
-            })}
-          </div>
-          <div className="bg-yellow-50 p-4 border border-yellow-200 text-[10px] uppercase leading-tight italic">
-            Note: For the authentic "Editorial Review" look, high-contrast imagery is recommended. Images will be processed as grayscale in the final publication layout.
-          </div>
+                <div className="flex items-center justify-center border-2 border-dashed border-gray-200">
+                   {data[pKey].imageUrl ? (
+                     <img src={data[pKey].imageUrl} className="max-h-32 grayscale object-contain" />
+                   ) : (
+                     <span className="text-[10px] uppercase text-gray-300">Preview Asset</span>
+                   )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
-      <div className="mt-12 flex justify-center">
+      <div className="mt-12 text-center border-t border-gray-100 pt-8">
         <button 
           onClick={onPreview}
-          className="bg-black text-white px-12 py-4 font-classic uppercase font-bold tracking-[0.2em] shadow-lg hover:bg-gray-800 transition-all transform hover:-translate-y-1"
+          className="bg-red-700 text-white px-12 py-4 font-classic uppercase font-bold tracking-widest hover:bg-red-800 shadow-xl transition-all"
         >
-          Commit to Print
+          Publish to Live Site
         </button>
       </div>
     </div>
